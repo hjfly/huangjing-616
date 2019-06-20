@@ -10,6 +10,7 @@ from django.contrib import admin
 # 公共URL配置
 urlpatterns = patterns(
     'huangjing.views',
-    (r'^$', 'index'),
+    (r'^$', 'contact_list'),
     (r'^test/api$', 'api_test'),
+    (r'^schedule/manage', 'schedule_manage'),
 )

@@ -5,7 +5,7 @@
         <label for="username">姓名：</label>
         <input type="text" class="form-control" id="username" placeholder="请输入姓名">
     </div>
-    <a class="king-btn-demo king-btn king-round king-primary" title="查询">
+    <a class="king-btn-demo king-btn king-round king-primary" title="查询" id="searchBtn">
     <i class="fa fa-search btn-icon"></i>查询
     </a>
 </div>
@@ -13,92 +13,47 @@
 <table class="bk-table has-table-bordered bk-demo">
     <thead>
         <tr>
-            <th>序号</th>
-            <th>名称</th>
-            <th>位置</th>
-            <th>日期</th>
-            <th>类型</th>
-            <th>状态</th>
-            <th>操作</th>
+            <th>姓名</th>
+            <th>登录名</th>
+            <th>手机号码</th>
+            <th>邮件</th>
+            <th>分组</th>
+            % if is_admin:
+                <th>角色</th>
+                <th>操作</th>
+            %endif
         </tr>
     </thead>
     <tbody>
+    % for user in result_users:
         <tr>
-            <td>1</td>
-            <td>Ravi Kumar</td>
-            <td>India</td>
-            <td>23/12/2012</td>
-            <td>Paid</td>
+            <td>${user.get('username')}</td>
+            <td>${user.get('loginname')}</td>
+            <td>${user.get('mobile')}</td>
+            <td>${user.get('email')}</td>
+            <td>${user.get('group_id')}</td>
+            % if is_admin:
             <td>
-                <span class="fb bk-text-success">Active</span>
+                % if user.get('role')==1:
+                 管理员
+                % else:
+                 普通用户
+                % endif
             </td>
             <td>
-                <a href="javascript:void(0);" class="bk-text-button">保存</a>
-                <a href="javascript:void(0);" class="bk-text-button">编辑</a>
-                <a href="javascript:void(0);" class="bk-text-button">删除</a>
+                <button class="king-btn-demo king-btn king-round king-warning" title="配置">
+                    <i class="fa fa-cog btn-icon"></i>修改
+                </button>
             </td>
+            % endif
         </tr>
-        <tr>
-            <td>2</td>
-            <td>Ravi Kumar</td>
-            <td>India</td>
-            <td>23/12/2012</td>
-            <td>Paid</td>
-            <td>
-                <span class="fb bk-text-danger">Banned</span>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="bk-text-button">保存</a>
-                <a href="javascript:void(0);" class="bk-text-button">编辑</a>
-                <a href="javascript:void(0);" class="bk-text-button">删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Ravi Kumar</td>
-            <td>India</td>
-            <td>23/12/2012</td>
-            <td>Paid</td>
-            <td>
-                <span class="fb bk-text-success">Active</span>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="bk-text-button">保存</a>
-                <a href="javascript:void(0);" class="bk-text-button">编辑</a>
-                <a href="javascript:void(0);" class="bk-text-button">删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>Ravi Kumar</td>
-            <td>India</td>
-            <td>23/12/2012</td>
-            <td>Paid</td>
-            <td>
-                <span class="fb bk-text-success">Active</span>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="bk-text-button">保存</a>
-                <a href="javascript:void(0);" class="bk-text-button">编辑</a>
-                <a href="javascript:void(0);" class="bk-text-button">删除</a>
-            </td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>Ravi Kumar</td>
-            <td>India</td>
-            <td>23/12/2012</td>
-            <td>Paid</td>
-            <td>
-                <span class="fb bk-text-danger">Banned</span>
-            </td>
-            <td>
-                <a href="javascript:void(0);" class="bk-text-button">保存</a>
-                <a href="javascript:void(0);" class="bk-text-button">编辑</a>
-                <a href="javascript:void(0);" class="bk-text-button">删除</a>
-            </td>
-        </tr>
+    % endfor
     </tbody>
 </table>
  </div>
+<script>
+    $('#searchBtn').bind('click',function(){
+        window.location.href='${SITE_URL}?username='+$('#username').val();
+    });
+</script>
 </%block>

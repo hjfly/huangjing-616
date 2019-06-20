@@ -1,0 +1,155 @@
+<%inherit file="/base.html"/>
+<%block name="content">
+<div class="tab-box" id="myTab3">
+    <ul class="nav nav-tabs king-nav-tabs2">
+        <li class="active">
+            <a href="#tab3_1" data-toggle="tab">分组管理</a>
+        </li>
+        <li>
+            <a href="#tab3_2" data-toggle="tab">节日管理</a>
+        </li>
+    </ul>
+    <div class="tab-content mb20">
+        <div class="tab-pane fade in active" id="tab3_1">
+            <div class="col-md-offset-10 mt10 mb20">
+                  <button class="king-btn-demo king-btn king-round king-success mr15" title="新增" data-toggle="modal" data-target="#addGroupModal">新增</button>
+            </div>
+
+            <table class="bk-table has-table-bordered bk-demo">
+                <thead>
+                <tr>
+                    <th>分组ID</th>
+                    <th>分组名</th>
+                    <th>分组排序</th>
+                    <th>分组人数</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>大网</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>
+                        <button class="king-btn-demo king-btn king-round king-warning" title="配置">
+                            <i class="fa fa-cog btn-icon"></i>修改
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="tab3_2">
+            <div class="form-inline mb20 mt10 ml5 ">
+               <div class="form-group mr10">
+                        <label for="username">年份：</label>
+                        <input type="text" class="form-control" id="username" placeholder="">
+                    </div>
+                    <a class="king-btn-demo king-btn king-round king-primary" title="查询" id="searchBtn">
+                        <i class="fa fa-search btn-icon"></i>查询</a>
+                  <button class="king-btn-demo king-btn king-round king-success " title="新增" data-toggle="modal" data-target="#addHolidayBtn">新增</button>
+            </div>
+            <table class="bk-table has-table-bordered bk-demo">
+                <thead>
+                <tr>
+                    <th>年份</th>
+                    <th>日期</th>
+                    <th>节日名称</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr>
+                    <td>2019</td>
+                    <td>2019-06-11</td>
+                    <td>端午</td>
+                    <td>
+                        <button class="king-btn-demo king-btn king-round king-warning" title="配置">
+                            <i class="fa fa-cog btn-icon"></i>修改
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" >添加分组</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>分組日期：</label>
+                    <div class=" input-group date" id="plugin9_demo2" data-date="" data-date-format="dd MM yyyy"
+                         data-link-field="dtp_input2"
+                         data-link-format="yyyy-mm-dd">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        <input class="form-control" size="16" type="text" value="">
+                    </div>
+                </div>
+                <div class="form-group mr10">
+                    <label>分組名稱：</label>
+                    <input class="form-control" size="16" type="text" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">提交更改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade" id="addHolidayModal" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">新增節日</h4>
+            </div>
+            <div class="modal-body">
+                 <div class="form-group">
+                    <label>日期：</label>
+                    <div class=" input-group date" id="plugin9_demo2" data-date="" data-date-format="dd MM yyyy"
+                         data-link-field="dtp_input2"
+                         data-link-format="yyyy-mm-dd">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                        <input class="form-control" size="16" type="text" value="">
+                    </div>
+                </div>
+                <div class="form-group mr10">
+                    <label>節日名稱：</label>
+                    <input class="form-control" size="16" type="text" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">提交更改</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        //日期选择器(Bootstrap)-2，日期选择
+    $('#plugin9_demo2').datetimepicker({
+        language:  'zh-TW',
+        weekStart: 1,
+        todayBtn:  true,
+        autoclose: true,
+        todayHighlight: true,
+        startView: 2,
+        minView: 2,
+        forceParse: false,
+        format:"yyyy-mm-dd",
+    });
+
+</script>
+</%block>
