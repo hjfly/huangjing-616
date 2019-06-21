@@ -7,6 +7,9 @@ from models import User
 from conf.default import APP_TOKEN, APP_ID
 from blueking.component.shortcuts import get_client_by_request
 from django.db.models import Q
+import xlrd
+from models import Group
+from models import Holiday
 
 
 def api_test(request):
@@ -49,4 +52,75 @@ def contact_list(request):
 
 
 def schedule_manage(request):
-    return render_mako_context(request, '/huangjing/schedule-manage.html')
+    group_list = []
+    result_list = Group.objects.values()
+    if result_list:
+        group_list = list(result_list)
+    return render_mako_context(request, '/huangjing/schedule-manage.html',{'group_list':group_list})
+
+
+def schedule_upload(request):
+    return render_mako_context(request, '/huangjing/schedule-upload.html')
+
+
+def api_schedule_upload(request):
+    """处理上传文件"""
+    wb = xlrd.open_workbook(filename=None, file_contents=request.FILES['file'].read())  # 关键点在于这里
+    table = wb.sheets()[0]
+    row = table.nrows
+    for i in xrange(1, row):
+        col = table.row_values(i)
+        print col
+
+    return render_mako_context(request, '/huangjing/schedule-upload.html')
+
+
+def api_group_add(request):
+    name = request.POST.get('name')
+    order = request.POST.get('order')
+    group = {
+        'name': name,
+        'order': order
+    }
+    Group.objects.create(**group)
+    return render_json({'success': True})
+
+
+def api_holiday_add(request):
+    name = request.POST.get('name')
+    time = request.POST.get('time')
+    holiday = Holiday(name=name)
+    holiday.data = time
+    holiday.year = time.split('-')[0]
+    holiday.save()
+    return render_json({'success': True})
+
+def api_group_update(request):
+    name = request.POST.get('name')
+    id = request.POST.get('id')
+    group = Group.objects.get(id=id)
+    group.name = name
+    group.save()
+    return render_json({'success': True})
+
+def api_holiday_update(request):
+    name = request.POST.get('name')
+    id = request.POST.get('id')
+    holiday = Holiday.objects.get(id=id)
+    holiday.name = name
+    holiday.save()
+    return render_json({'success': True})
+
+
+
+def api_holiday_list(request):
+    holiday_list = []
+    q_query = Q()
+    year = request.POST.get("year")
+    if year:
+        q_query = q_query & Q(year=year)
+    result_list = Holiday.objects.filter(q_query).values()
+
+    if result_list:
+        holiday_list = list(result_list)
+    return render_json({"success":True,"data": holiday_list})

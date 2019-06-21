@@ -1,0 +1,31 @@
+<%inherit file="/base.html"/>
+<%block name="content">
+<form action="${SITE_URL}api/schedule/upload" method="POST" enctype="multipart/form-data">
+
+    <div class="form-group mr10 mt10">
+        <input type="file" name="file" class="file" id="fileField" size="28"/>
+    </div>
+    <div class="form-group mr10 mt10">
+        <button class="king-btn-demo king-btn king-round king-success " type="submit" name="submit">上传</button>
+    </div>
+</form>
+ <div class="form-group">
+<table class="bk-table has-table-bordered bk-demo">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>登录名</th>
+            <th>手机号码</th>
+            <th>邮件</th>
+            <th>分组</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<script>
+    $('#searchBtn').bind('click',function(){
+        window.location.href='${SITE_URL}?username='+$('#username').val();
+    });
+</script>
+</%block>

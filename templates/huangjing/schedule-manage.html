@@ -25,31 +25,32 @@
                     <th>操作</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="groupTbody">
+                % for group in group_list:
                 <tr>
-                    <td>1</td>
-                    <td>大网</td>
-                    <td>2</td>
+                    <td>${loop.index+1}</td>
+                    <td>${group.get('name')}</td>
+                    <td>${group.get('order')}</td>
                     <td>3</td>
                     <td>
-                        <button class="king-btn-demo king-btn king-round king-warning" title="配置">
+                        <button class="king-btn-demo king-btn king-round king-warning" title="修改" data-name="${group.get('name')}" data-id="${group.get('id')}"  onclick="showUpdateGroup(this);">
                             <i class="fa fa-cog btn-icon"></i>修改
                         </button>
                     </td>
                 </tr>
-
+                % endfor
                 </tbody>
             </table>
         </div>
         <div class="tab-pane fade" id="tab3_2">
             <div class="form-inline mb20 mt10 ml5 ">
                <div class="form-group mr10">
-                        <label for="username">年份：</label>
-                        <input type="text" class="form-control" id="username" placeholder="">
+                        <label for="time">年份：</label>
+                        <input type="text" class="form-control" id="time" placeholder="">
                     </div>
                     <a class="king-btn-demo king-btn king-round king-primary" title="查询" id="searchBtn">
                         <i class="fa fa-search btn-icon"></i>查询</a>
-                  <button class="king-btn-demo king-btn king-round king-success " title="新增" data-toggle="modal" data-target="#addHolidayBtn">新增</button>
+                  <button class="king-btn-demo king-btn king-round king-success " title="新增" data-toggle="modal" data-target="#addHolidayModal">新增</button>
             </div>
             <table class="bk-table has-table-bordered bk-demo">
                 <thead>
@@ -60,18 +61,7 @@
                     <th>操作</th>
                 </tr>
                 </thead>
-                <tbody>
-
-                <tr>
-                    <td>2019</td>
-                    <td>2019-06-11</td>
-                    <td>端午</td>
-                    <td>
-                        <button class="king-btn-demo king-btn king-round king-warning" title="配置">
-                            <i class="fa fa-cog btn-icon"></i>修改
-                        </button>
-                    </td>
-                </tr>
+                <tbody id="holidayTbody">
 
                 </tbody>
             </table>
@@ -87,23 +77,18 @@
                 <h4 class="modal-title" >添加分组</h4>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>分組日期：</label>
-                    <div class=" input-group date" id="plugin9_demo2" data-date="" data-date-format="dd MM yyyy"
-                         data-link-field="dtp_input2"
-                         data-link-format="yyyy-mm-dd">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        <input class="form-control" size="16" type="text" value="">
-                    </div>
-                </div>
                 <div class="form-group mr10">
                     <label>分組名稱：</label>
-                    <input class="form-control" size="16" type="text" value="">
+                    <input class="form-control" size="16" id="groupName" type="text" value="">
+                </div>
+                <div class="form-group mr10">
+                    <label>分組排序：</label>
+                    <input class="form-control" size="16" id="groupSort" type="text" value="">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary">提交更改</button>
+                <button type="button" class="btn btn-primary" id="addGroupConfirm">保存</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
@@ -122,34 +107,181 @@
                          data-link-field="dtp_input2"
                          data-link-format="yyyy-mm-dd">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                        <input class="form-control" size="16" type="text" value="">
+                        <input class="form-control" size="16" type="text" id="groupTime" value="">
                     </div>
                 </div>
                 <div class="form-group mr10">
                     <label>節日名稱：</label>
-                    <input class="form-control" size="16" type="text" value="">
+                    <input class="form-control" size="16" type="text" id="holidayName" value="">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary">提交更改</button>
+                <button type="button" class="btn btn-primary" id="addHolidayConfirm">保存</button>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="updateGroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" >修改分组</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mr10">
+                    <label>分組名稱：</label>
+                    <input class="form-control" size="16" id="updateGroupName" type="text" value="">
+                    <input class="form-control" size="16" id="updateGroupId" type="hidden" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="updateGroupConfirm">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+
+<div class="modal fade" id="updateHolidayModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" >修改</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mr10">
+                    <label>节日名稱：</label>
+                    <input class="form-control" size="16" id="updateHolidayName" type="text" value="">
+                    <input class="form-control" size="16" id="updateHolidayId" type="hidden" value="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="updateHolidayConfirm">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 <script>
+        $(function(){
+            initHolidayList();
+        });
         //日期选择器(Bootstrap)-2，日期选择
-    $('#plugin9_demo2').datetimepicker({
-        language:  'zh-TW',
-        weekStart: 1,
-        todayBtn:  true,
-        autoclose: true,
-        todayHighlight: true,
-        startView: 2,
-        minView: 2,
-        forceParse: false,
-        format:"yyyy-mm-dd",
-    });
+        $('#plugin9_demo2').datetimepicker({
+            language: 'zh-TW',
+            weekStart: 1,
+            todayBtn: true,
+            autoclose: true,
+            todayHighlight: true,
+            startView: 2,
+            minView: 2,
+            forceParse: false,
+            format: "yyyy-mm-dd",
+        });
+
+        $('#addHolidayConfirm').bind('click', function () {
+             saveHoliday();
+        });
+        $('#addGroupConfirm').bind('click', function () {
+            saveGroup();
+        });
+        $('#updateGroupConfirm').bind('click',function(){
+            updateGroup();
+        });
+        $('#updateHolidayConfirm').bind('click',function(){
+            updateHoliday();
+        });
+         $('#searchBtn').bind('click',function(){
+            initHolidayList();
+        });
+
+        function saveGroup() {
+            $.ajax({
+                url: "${SITE_URL}api/group/add",
+                method: 'post',
+                data: {name: $('#groupName').val(), order: $('#groupSort').val()},
+                success: function (resp) {
+                    window.location.href = "${SITE_URL}schedule/manage";
+                }
+            })
+        }
+
+        function saveHoliday() {
+            $.ajax({
+                url: "${SITE_URL}api/holiday/add",
+                method: 'post',
+                data: {name: $('#holidayName').val(), time: $('#groupTime').val()},
+                success: function (resp) {
+                    $('#addHolidayModal').modal('hide');
+                    $('#holidayName').val('');
+                    $('#groupTime').val('');
+                    initHolidayList();
+                }
+            })
+        }
+
+        function showUpdateGroup(_this) {
+            $('#updateGroupModal').modal('show');
+            $('#updateGroupName').val($(_this).data('name'));
+            $('#updateGroupId').val($(_this).data('id'));
+        }
+
+        function updateGroup() {
+            $.ajax({
+                url: "${SITE_URL}api/group/update",
+                method: 'post',
+                data: {id: $('#updateGroupId').val(), name: $('#updateGroupName').val()},
+                success: function (resp) {
+                   window.location.href = "${SITE_URL}schedule/manage";
+                }
+            });
+        }
+        function showUpdateHoliday(_this) {
+            $('#updateHolidayModal').modal('show');
+            $('#updateHolidayName').val($(_this).data('name'));
+            $('#updateHolidayId').val($(_this).data('id'));
+        }
+         function updateHoliday() {
+           $.ajax({
+                url: "${SITE_URL}api/holiday/update",
+                method: 'post',
+                data: {id: $('#updateHolidayId').val(), name: $('#updateHolidayName').val()},
+               success: function (resp) {
+                   $('#updateHolidayModal').modal('hide');
+                   $('#updateHolidayName').val('');
+                   initHolidayList();
+               }
+            });
+        }
+        function initHolidayList(){
+            $.ajax({
+                url: "${SITE_URL}api/holiday/list",
+                method: 'post',
+                data: {year: $('#time').val()},
+                success: function (resp) {
+                    if (resp.success) {
+                        var _html = '';
+                        for (var i = 0; i < resp.data.length; i++) {
+                            var id = resp.data[i]['id'];
+                            var name = resp.data[i]['name'];
+                            _html += '<tr> ';
+                            _html += '<td>' + resp.data[i]['year'] + '</td>';
+                            _html += '<td>' + resp.data[i]['data'] + '</td>';
+                            _html += '<td>' + resp.data[i]['name'] + '</td>';
+                            _html += '<td><button class="king-btn-demo king-btn king-round king-warning" data-name="' + name + '" data-id="' + id + '" onclick="showUpdateHoliday(this);"><i class="fa fa-cog btn-icon"></i>修改</button></td>';
+                            _html += '</tr>';
+                        }
+                        $('#holidayTbody').html(_html);
+                    }
+                }
+            });
+        }
+
 
 </script>
 </%block>
