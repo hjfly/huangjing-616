@@ -66,11 +66,14 @@ def schedule_upload(request):
 def api_schedule_upload(request):
     """处理上传文件"""
     wb = xlrd.open_workbook(filename=None, file_contents=request.FILES['file'].read())  # 关键点在于这里
-    table = wb.sheets()[0]
-    row = table.nrows
+    # col = table.row_values(i) 行内容
+    sheet = wb.sheets()[0]
+    row = sheet.nrows
+    col = sheet.ncols
     for i in xrange(1, row):
-        col = table.row_values(i)
-        print col
+        for j in xrange(0, col):
+          print sheet.row(i)[j].value
+
 
     return render_mako_context(request, '/huangjing/schedule-upload.html')
 
