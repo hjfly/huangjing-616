@@ -144,6 +144,8 @@ STATIC_VERSION = 0.1
 STATIC_URL = '%sstatic/' % SITE_URL
 
 ROOT_URLCONF = 'urls'
+
+FILE_UPLOAD_PATH = os.path.join(PROJECT_ROOT, 'upload')
 # ==============================================================================
 # Templates
 # ==============================================================================

@@ -4,12 +4,13 @@ from common.mymako import render_json
 from common.mymako import render_mako_context
 import datetime
 from models import User
-from conf.default import APP_TOKEN, APP_ID
+from conf.default import APP_TOKEN, APP_ID,FILE_UPLOAD_PATH
 from blueking.component.shortcuts import get_client_by_request
 from django.db.models import Q
 import xlrd
 from models import Group
 from models import Holiday
+import os
 
 
 def api_test(request):
@@ -127,3 +128,25 @@ def api_holiday_list(request):
     if result_list:
         holiday_list = list(result_list)
     return render_json({"success":True,"data": holiday_list})
+
+
+
+
+
+def file_upload(request):
+    if not os.path.exists(FILE_UPLOAD_PATH):
+        os.makedirs(FILE_UPLOAD_PATH)
+    """处理上传文件"""
+    filedata = request.FILES.get('file')
+    if filedata.file:
+        file_path = os.path.join(FILE_UPLOAD_PATH, filedata.name)
+        try:
+            f = open(file_path, 'wb')
+            for chunk in filedata.chunks():
+                f.write(chunk)
+            f.close()
+        except IOError:
+            return '上传文件失败'
+        return '上传文件成功, 文件名: '+file_path
+    else:
+        return '上传文件失败'
