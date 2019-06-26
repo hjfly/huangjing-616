@@ -76,57 +76,56 @@ def schedule_upload(request):
         for key in MONTH:
             if key == month:
                 request_month = MONTH[key]
-    scheduled = Scheduled.objects.filter(month=request_month).order_by('-day').values()[0]
-    day = scheduled['day']
+    scheduled = Scheduled.objects.filter(month=request_month).order_by('-day').values()
     group_scheduled = []
-    first_day_scheduled = Scheduled.objects.filter(day=1).values()[0]
-    group_ids = Scheduled.objects.filter(day=1).values('group_id').distinct()
-    groups = []
-    for group_id in group_ids:
-        group = Group.objects.get(id=group_id['group_id'])
-        groups.append(group.name)
-
-    first_week_index = WEEK.index(first_day_scheduled['week'])
-    temp = []
-    flag = True
-    for k in xrange(0, len(groups) + 1):
-        temp.append('')
-
-    temp_data = {}
-    if first_week_index > 0:
-        for j in xrange(0, first_week_index):
-            temp_data['week' + str(j)] = temp
-    data = {}
-    last_week_index = 0
-    for i in xrange(1, day+1):
-        scheduled = Scheduled.objects.filter(day=i).values()[0]
-        user_array = [i]
+    if scheduled and len(list(scheduled)) > 0:
+        day = scheduled[0]['day']
+        first_day_scheduled = Scheduled.objects.filter(day=1).values()[0]
+        group_ids = Scheduled.objects.filter(day=1).values('group_id').distinct()
+        groups = []
         for group_id in group_ids:
-            users = Scheduled.objects.filter(day=i, group_id=group_id['group_id']).values()
-            temp_user = ''
-            for user in users:
-                user_obj = User.objects.get(id=user['user_id'])
-                temp_user += user_obj.username + '、'
-            user_array.append(temp_user)
+            group = Group.objects.get(id=group_id['group_id'])
+            groups.append(group.name)
 
-        if first_week_index != 0 and flag:
-            data = temp_data
-            flag = False
-        current_week_index = WEEK.index(scheduled['week'])
-        last_week_index = current_week_index
-        data['week' + str(current_week_index)] = user_array
-        if scheduled['week'] == '周六':
+        first_week_index = WEEK.index(first_day_scheduled['week'])
+        temp = []
+        flag = True
+        for k in xrange(0, len(groups) + 1):
+            temp.append('')
+
+        temp_data = {}
+        if first_week_index > 0:
+            for j in xrange(0, first_week_index):
+                temp_data['week' + str(j)] = temp
+        data = {}
+        last_week_index = 0
+        for i in xrange(1, day+1):
+            scheduled = Scheduled.objects.filter(day=i).values()[0]
+            user_array = [i]
+            for group_id in group_ids:
+                users = Scheduled.objects.filter(day=i, group_id=group_id['group_id']).values()
+                temp_user = ''
+                for user in users:
+                    user_obj = User.objects.get(id=user['user_id'])
+                    temp_user += user_obj.username + '、'
+                user_array.append(temp_user)
+
+            if first_week_index != 0 and flag:
+                data = temp_data
+                flag = False
+            current_week_index = WEEK.index(scheduled['week'])
+            last_week_index = current_week_index
+            data['week' + str(current_week_index)] = user_array
+            if scheduled['week'] == '周六':
+                data['time'] = '日期'
+                data['groups'] = groups
+                group_scheduled.append(data)
+                data = {}
+
+        if last_week_index != 6:
             data['time'] = '日期'
             data['groups'] = groups
             group_scheduled.append(data)
-            data = {}
-
-    if last_week_index != 6:
-        data['time'] = '日期'
-        data['groups'] = groups
-        group_scheduled.append(data)
-
-    print group_scheduled
     return render_mako_context(request, '/huangjing/schedule-upload.html', {'scheduled_list': group_scheduled})
 
 
@@ -232,3 +231,10 @@ def file_upload(request):
         return '上传文件成功, 文件名: ' + file_path
     else:
         return '上传文件失败'
+
+def schedule_statistics(request):
+    return render_mako_context(request,'/huangjing/schedule-statistics.html')
+
+
+def api_schedule_statistics(request):
+    return render_json({'success': True})

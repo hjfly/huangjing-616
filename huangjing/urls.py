@@ -20,4 +20,7 @@ urlpatterns = patterns(
     (r'^api/group/update', 'api_group_update'),
     (r'^api/holiday/update', 'api_holiday_update'),
     (r'^api/holiday/list', 'api_holiday_list'),
+    (r'^schedule/statistics', 'schedule_statistics'),
+    (r'^api/schedule/statistics', 'api_schedule_statistics'),
+
 )

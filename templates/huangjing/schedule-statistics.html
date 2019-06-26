@@ -1,0 +1,183 @@
+<%inherit file="/base.html"/>
+<%block name="content">
+<div class="tab-box" id="myTab3">
+    <ul class="nav nav-tabs king-nav-tabs2">
+        <li class="">
+            <a href="#tab3_1" data-toggle="tab" aria-expanded="false">个人排班统计</a>
+        </li>
+        <li class="">
+            <a href="#tab3_2" data-toggle="tab" aria-expanded="false">分组排班统计</a>
+        </li>
+    </ul>
+    <div class="tab-content mb20">
+        <div class="tab-pane fade" id="tab3_1">
+            <p style="padding:15px;">
+                <div id="personalStatistics"></div>
+            </p>
+        </div>
+        <div class="tab-pane fade" id="tab3_2">
+            <p style="padding:15px;">
+               <div id="groupStatistics"></div>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function createEBarChart(conf){
+        var myChart = echarts.init(document.getElementById(conf.selector));
+        var legendData = [];//存放变量的name
+        for(var i = 0; i < conf.data.series.length; i++){
+            legendData.push(conf.data.series[i].name);
+        }
+        myChart.setOption({
+            legend: {
+                y: 'bottom',
+                data:legendData
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            yAxis : [
+                {
+                    type : 'value',
+                    splitArea : {show : true}
+                }
+            ],
+            xAxis : conf.data.xAxis,
+            series : conf.data.series
+        })
+    }
+    function initEBarChart(conf){
+        $.ajax({
+            url: conf.url,
+            type: 'post',
+            dataType: conf.dataType,
+            success: function(res){
+                //获取数据成功
+                if (res.result){
+                    createEBarChart({
+                        selector: conf.containerId, // 图表容器
+                        data: res.data, // 图表数据
+                    });
+                }
+            }
+        })
+    }
+    $(function(){
+       /* initEBarChart({
+            url: demoJson,
+            dataType: 'json',
+            containerId: 'personalStatistics'
+        });*/
+
+        createEBarChart({
+            data: demoJson['data'],
+            selector: 'personalStatistics'
+        })
+    });
+
+
+
+
+     function createEStandLineChart(conf){
+        var myChart = echarts.init(document.getElementById(conf.selector));
+        var legendData = []
+        for(var i=0; i < conf.data.series.length;i++){
+            legendData.push(conf.data.series[i].name)
+        }
+        myChart.setOption({
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                y: 'bottom',
+                data:legendData
+            },
+            toolbox: {
+                show : true,
+                feature : {
+                    mark : {show: true},
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['bar','line']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : conf.data.xAxis
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    splitArea : {show : true}
+                }
+            ],
+            series : conf.data.series
+        });
+     }
+    function initEStandLineChart(conf){
+        $.ajax({
+            url: conf.url,
+            type: 'GET',
+            dataType: conf.dataType,
+            success: function(res){
+                //获取数据成功
+                if (res.result){
+                    createEStandLineChart({
+                        selector: conf.containerId, // 图表容器
+                        data: res.data, // 图表数据
+                    });
+                }
+            }
+        })
+    }
+    $(function(){
+    /*    initEStandLineChart({
+            url: demoJson,
+            dataType: 'json',
+            containerId: 'groupStatistics'
+        });*/
+         createEStandLineChart({
+            data: demoJson['data'],
+            selector: 'groupStatistics'
+        })
+    });
+    var demoJson={
+    "code":0,
+    "result": true,
+    "messge":"success",
+    "data":{
+        "xAxis" : [{
+            "type" : "category",
+            "data" : ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+        }],
+        "series": [{
+            "name":"蒸发量",
+            "type":"bar",
+            "data":[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+        }, {
+            "name":"降水量",
+            "type":"bar",
+            "data":[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+        }]
+    }
+
+}
+</script>
+</%block>

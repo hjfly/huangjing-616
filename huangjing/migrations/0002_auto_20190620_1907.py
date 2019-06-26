@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='scheduled',
             name='day',
-            field=models.CharField(max_length=255, null=True, blank=True),
+            field=models.IntegerField(null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='scheduled',
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='scheduled',
             name='year',
-            field=models.CharField(max_length=255, null=True, blank=True),
+            field=models.IntegerField(null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='user',

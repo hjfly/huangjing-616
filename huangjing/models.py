@@ -35,10 +35,10 @@ class Holiday(models.Model):
 class Scheduled(models.Model):
     group_id = models.CharField(max_length=255, blank=True, null=True)
     user_id = models.CharField(max_length=255, blank=True, null=True)
-    day = models.IntegerField(max_length=255, blank=True, null=True)
+    day = models.IntegerField(blank=True, null=True)
     month = models.CharField(max_length=255, blank=True, null=True)
     week = models.CharField(max_length=255, blank=True, null=True)
-    year = models.IntegerField(max_length=255, blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'Scheduled'
