@@ -2,7 +2,7 @@
 <%block name="content">
 <div class="tab-box" id="myTab3">
     <ul class="nav nav-tabs king-nav-tabs2">
-        <li class="">
+        <li class="active">
             <a href="#tab3_1" data-toggle="tab" aria-expanded="false">个人排班统计</a>
         </li>
         <li class="">
@@ -10,154 +10,30 @@
         </li>
     </ul>
     <div class="tab-content mb20">
-        <div class="tab-pane fade" id="tab3_1">
+        <div class="tab-pane fade active in" id="tab3_1">
+             <div class="form-group">
+                <label class="col-sm-2 control-label">姓名：</label>
+                <div class="col-sm-5">
+                    <select name="" id="username" class="form-control">
+                        % for user in users:
+                           <option value="${user.id}">${user.username}</option>
+                        % endfor
+                    </select>
+                </div>
+            </div>
             <p style="padding:15px;">
-                <div id="personalStatistics"></div>
+                <div id="personalStatistics" style="height:400px;border:1px solid #ccc;"></div>
             </p>
         </div>
         <div class="tab-pane fade" id="tab3_2">
             <p style="padding:15px;">
-               <div id="groupStatistics"></div>
+               <div id="groupStatistics" style="height:400px;border:1px solid #ccc;"></div>
             </p>
         </div>
     </div>
 </div>
 
 <script type="text/javascript">
-    function createEBarChart(conf){
-        var myChart = echarts.init(document.getElementById(conf.selector));
-        var legendData = [];//存放变量的name
-        for(var i = 0; i < conf.data.series.length; i++){
-            legendData.push(conf.data.series[i].name);
-        }
-        myChart.setOption({
-            legend: {
-                y: 'bottom',
-                data:legendData
-            },
-            tooltip : {
-                trigger: 'axis'
-            },
-            toolbox: {
-                show : true,
-                feature : {
-                    mark : {show: true},
-                    dataView : {show: true, readOnly: false},
-                    magicType : {show: true, type: ['line', 'bar']},
-                    restore : {show: true},
-                    saveAsImage : {show: true}
-                }
-            },
-            calculable : true,
-            yAxis : [
-                {
-                    type : 'value',
-                    splitArea : {show : true}
-                }
-            ],
-            xAxis : conf.data.xAxis,
-            series : conf.data.series
-        })
-    }
-    function initEBarChart(conf){
-        $.ajax({
-            url: conf.url,
-            type: 'post',
-            dataType: conf.dataType,
-            success: function(res){
-                //获取数据成功
-                if (res.result){
-                    createEBarChart({
-                        selector: conf.containerId, // 图表容器
-                        data: res.data, // 图表数据
-                    });
-                }
-            }
-        })
-    }
-    $(function(){
-       /* initEBarChart({
-            url: demoJson,
-            dataType: 'json',
-            containerId: 'personalStatistics'
-        });*/
-
-        createEBarChart({
-            data: demoJson['data'],
-            selector: 'personalStatistics'
-        })
-    });
-
-
-
-
-     function createEStandLineChart(conf){
-        var myChart = echarts.init(document.getElementById(conf.selector));
-        var legendData = []
-        for(var i=0; i < conf.data.series.length;i++){
-            legendData.push(conf.data.series[i].name)
-        }
-        myChart.setOption({
-            tooltip : {
-                trigger: 'axis'
-            },
-            legend: {
-                y: 'bottom',
-                data:legendData
-            },
-            toolbox: {
-                show : true,
-                feature : {
-                    mark : {show: true},
-                    dataView : {show: true, readOnly: false},
-                    magicType : {show: true, type: ['bar','line']},
-                    restore : {show: true},
-                    saveAsImage : {show: true}
-                }
-            },
-            calculable : true,
-            xAxis : [
-                {
-                    type : 'category',
-                    data : conf.data.xAxis
-                }
-            ],
-            yAxis : [
-                {
-                    type : 'value',
-                    splitArea : {show : true}
-                }
-            ],
-            series : conf.data.series
-        });
-     }
-    function initEStandLineChart(conf){
-        $.ajax({
-            url: conf.url,
-            type: 'GET',
-            dataType: conf.dataType,
-            success: function(res){
-                //获取数据成功
-                if (res.result){
-                    createEStandLineChart({
-                        selector: conf.containerId, // 图表容器
-                        data: res.data, // 图表数据
-                    });
-                }
-            }
-        })
-    }
-    $(function(){
-    /*    initEStandLineChart({
-            url: demoJson,
-            dataType: 'json',
-            containerId: 'groupStatistics'
-        });*/
-         createEStandLineChart({
-            data: demoJson['data'],
-            selector: 'groupStatistics'
-        })
-    });
     var demoJson={
     "code":0,
     "result": true,
@@ -178,6 +54,107 @@
         }]
     }
 
-}
+};
+    function createEBarChart(conf){
+        var myChart = echarts.init(document.getElementById(conf.selector));
+        var legendData = [];//存放变量的name
+        for(var i = 0; i < conf.data.series.length; i++){
+            legendData.push(conf.data.series[i].name);
+        }
+        myChart.setOption({
+            legend: {
+                y: 'bottom',
+                data:legendData
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            toolbox: {
+                show : true
+            },
+            calculable : true,
+            yAxis : [
+                {
+                    type : 'value',
+                    splitArea : {show : true}
+                }
+            ],
+            xAxis : conf.data.xAxis,
+            series : conf.data.series
+        })
+    }
+    function initEBarChart(conf){
+        $.ajax({
+            url: "${SITE_URL}api/schedule/statistics",
+            type: 'post',
+            data:{userId:$('#username').val()},
+            success: function(res){
+                //获取数据成功
+                if (res.result){
+                    createEBarChart({
+                        selector: conf.containerId, // 图表容器
+                        data: res.data, // 图表数据
+                    });
+                }
+            }
+        })
+    }
+    $(function(){
+        initEStandLineChart({
+            url: '${SITE_URL}api/schedule/statistics',
+            data: {'user_id': $('#username').val()},
+            containerId: 'personalStatistics'
+        });
+    });
+
+     function createEStandLineChart(conf){
+        var myChart = echarts.init(document.getElementById(conf.selector));
+        var legendData = []
+        for(var i=0; i < conf.data.series.length;i++){
+            legendData.push(conf.data.series[i].name)
+        }
+        myChart.setOption({
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                y: 'bottom',
+                data:legendData
+            },
+            toolbox: {
+                show : true
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : conf.data.xAxis
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    splitArea : {show : true}
+                }
+            ],
+            series : conf.data.series
+        });
+     }
+    function initEStandLineChart(conf){
+        $.ajax({
+            url: conf.url,
+            type: 'POST',
+            data: conf.data,
+            success: function(res){
+                //获取数据成功
+                if (res.result){
+                    createEStandLineChart({
+                        selector: conf.containerId, // 图表容器
+                        data: res.data, // 图表数据
+                    });
+                }
+            }
+        })
+    }
 </script>
 </%block>

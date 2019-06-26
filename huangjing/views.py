@@ -6,7 +6,7 @@ import datetime
 from models import User
 from conf.default import APP_TOKEN, APP_ID, FILE_UPLOAD_PATH
 from blueking.component.shortcuts import get_client_by_request
-from django.db.models import Q
+from django.db.models import Q,Count
 import xlrd
 from models import Group
 from models import Holiday
@@ -17,6 +17,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+MONTH = {1: '一月', 2: '二月', 3: '三月', 4: '四月', 5: '五月', 6: '六月', 7: '七月', 8: '八月', 9: '九月', 10: '十月', 11: '十一月',
+         12: '十二月'}
 
 def api_test(request):
     return render_json({'result': 'true', 'username': request.user.username,
@@ -68,8 +70,6 @@ def schedule_manage(request):
 
 def schedule_upload(request):
     request_month = request.POST.get('month', '六月')
-    MONTH = {1: '一月', 2: '二月', 3: '三月', 4: '四月', 5: '五月', 6: '六月', 7: '七月', 8: '八月', 9: '九月', 10: '十月', 11: '十一月',
-             12: '十二月'}
     WEEK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
     if not request_month:
         month = datetime.datetime.now().month
@@ -233,8 +233,74 @@ def file_upload(request):
         return '上传文件失败'
 
 def schedule_statistics(request):
-    return render_mako_context(request,'/huangjing/schedule-statistics.html')
+    users = User.objects.all()
+    return render_mako_context(request,'/huangjing/schedule-statistics.html',{'users': users})
 
 
 def api_schedule_statistics(request):
-    return render_json({'success': True})
+    user_id = request.POST.get('userId')
+    holidays = Holiday.objects.all()
+    statistic_holiday =[]
+    statistic_normal =[]
+    for holiday in holidays:
+        date = holiday['data']
+        str = date.split('-')
+        month_key = int(str[1])
+        month_value = MONTH[month_key]
+        day = int(str[2])
+        holiday_schedules = Scheduled.objects.filter(user_id=user_id, month=month_value, day=day).values()
+        holiday_days = len(list(holiday_schedules))
+        flag = True
+        for sta in statistic_holiday:
+            if sta['month'] == month_key:
+                sta['day'] = sta['day'] + holiday_days
+                flag = False
+        if flag:
+            statistic_holiday.append({'month': month_key, 'day': holiday_days})
+
+    for holiday in holidays:
+        date = holiday['data']
+        str = date.split('-')
+        month_key = int(str[1])
+        month_value = MONTH[month_key]
+        schedules = Scheduled.objects.filter(user_id=user_id, month=month_value).values()
+        sum_days = len(list(schedules))
+        flag = True
+        for sta in statistic_holiday:
+            if sta[month_key]:
+                statistic_normal.append({'month': month_key, 'day': sum_days - sta['day']})
+                flag = False
+
+        if flag:
+            statistic_normal.append({'month': month_key, 'day': sum_days})
+
+    normals = []
+    holidays = []
+    for key in MONTH.keys():
+        for normal in statistic_normal:
+            if normal['month'] == key:
+                normals.append(normal['day'])
+            else:
+                normals.append(0)
+        for holiday in statistic_holiday:
+            if holiday['month'] == key:
+                holidays.append(holiday['day'])
+            else:
+                holidays.append(0)
+
+    data = {
+        "xAxis": [{
+            "type": "category",
+            "data": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+        }],
+        "series": [{
+            "name": "节假日",
+            "type": "bar",
+            "data": holidays
+        }, {
+            "name": "工作日",
+            "type": "bar",
+            "data": normals
+        }]
+    }
+    return render_json({'result': True, 'data': data})
