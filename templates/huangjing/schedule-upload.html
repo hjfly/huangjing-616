@@ -13,14 +13,76 @@
 <table class="bk-table has-table-bordered bk-demo">
     <thead>
         <tr>
-            <th>姓名</th>
-            <th>登录名</th>
-            <th>手机号码</th>
-            <th>邮件</th>
-            <th>分组</th>
+            <th></th>
+            <th>周日</th>
+            <th>周一</th>
+            <th>周二</th>
+            <th>周三</th>
+            <th>周四</th>
+            <th>周五</th>
+            <th>周六</th>
         </tr>
     </thead>
     <tbody>
+       % for scheduled in scheduled_list:
+     <tr>
+            <td>
+                <p>${scheduled.get('time')}</p>
+                % for group in scheduled.get('groups'):
+                <p>${group}</p>
+                % endfor
+            </td>
+            <td>
+                  % if scheduled.get('week0'):
+                    % for week in scheduled.get('week0'):
+                    <p>${week}</p>
+                    % endfor
+                 % endif
+            </td>
+            <td>
+                  % if scheduled.get('week1'):
+                    % for week in scheduled.get('week1'):
+                    <p>${week}</p>
+                    % endfor
+                 % endif
+            </td>
+             <td>
+                    % if scheduled.get('week2'):
+                        % for week in scheduled.get('week2'):
+                        <p>${week}</p>
+                        % endfor
+                   % endif
+            </td>
+          <td>
+                  % if scheduled.get('week3'):
+                    % for week in scheduled.get('week3'):
+                    <p>${week}</p>
+                    % endfor
+                  % endif
+            </td>
+          <td>
+               % if scheduled.get('week4'):
+                % for week in scheduled.get('week4'):
+                <p>${week}</p>
+                % endfor
+               % endif
+            </td>
+          <td>
+              % if scheduled.get('week5'):
+                % for week in scheduled.get('week5'):
+                <p>${week}</p>
+                % endfor
+              % endif
+            </td>
+          <td>
+              % if scheduled.get('week6'):
+                % for week in scheduled.get('week6'):
+                <p>${week}</p>
+                % endfor
+              % endif
+            </td>
+        </tr>
+    % endfor
     </tbody>
 </table>
 <script>
