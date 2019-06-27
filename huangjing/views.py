@@ -6,7 +6,7 @@ import datetime
 from models import User
 from conf.default import APP_TOKEN, APP_ID, FILE_UPLOAD_PATH
 from blueking.component.shortcuts import get_client_by_request
-from django.db.models import Q,Count
+from django.db.models import Q,Max
 import xlrd
 from models import Group
 from models import Holiday
@@ -76,10 +76,10 @@ def schedule_upload(request):
         for key in MONTH:
             if key == month:
                 request_month = MONTH[key]
-    scheduled = Scheduled.objects.filter(month=request_month).order_by('-day').values()
+    scheduled = Scheduled.objects.filter(month=request_month).all().aggregate(Max('day'))
     group_scheduled = []
-    if scheduled and len(list(scheduled)) > 0:
-        day = scheduled[0]['day']
+    if scheduled and scheduled['day__max']:
+        day = scheduled['day__max']
         first_day_scheduled = Scheduled.objects.filter(day=1).values()[0]
         group_ids = Scheduled.objects.filter(day=1).values('group_id').distinct()
         groups = []
