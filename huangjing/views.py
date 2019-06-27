@@ -234,11 +234,22 @@ def file_upload(request):
 
 def schedule_statistics(request):
     users = User.objects.all()
-    return render_mako_context(request,'/huangjing/schedule-statistics.html',{'users': users})
+    groups = Group.objects.all()
+    return render_mako_context(request,'/huangjing/schedule-statistics.html',{'users': users, 'groups': groups})
 
 
 def api_schedule_statistics(request):
-    user_id = request.POST.get('userId')
+    user_id = request.POST.get('user_id')
+    group_id = request.POST.get('group_id')
+    q_query = Q()
+    q_q = Q()
+    if user_id:
+        q_query = q_query & Q(user_id=user_id)
+        q_q = q_q & Q(user_id=user_id)
+    if group_id:
+        q_query = q_query & Q(group_id=group_id)
+        q_q = q_q & Q(group_id=group_id)
+
     holidays = Holiday.objects.all()
     statistic_holiday =[]
     statistic_normal =[]
@@ -248,8 +259,12 @@ def api_schedule_statistics(request):
         month_key = int(str[1])
         month_value = MONTH[month_key]
         day = int(str[2])
-        holiday_schedules = Scheduled.objects.filter(user_id=user_id, month=month_value, day=day).values()
-        holiday_days = len(list(holiday_schedules))
+        q_query = q_query & Q(month=month_value)
+        q_query = q_query & Q(day=day)
+        holiday_schedules = Scheduled.objects.filter(q_query).values()
+        holiday_days = 0
+        if holiday_schedules:
+            holiday_days = len(list(holiday_schedules))
         flag = True
         for sta in statistic_holiday:
             if sta['month'] == month_key:
@@ -263,8 +278,11 @@ def api_schedule_statistics(request):
         str = date.split('-')
         month_key = int(str[1])
         month_value = MONTH[month_key]
-        schedules = Scheduled.objects.filter(user_id=user_id, month=month_value).values()
-        sum_days = len(list(schedules))
+        q_q = q_q & Q(month=month_value)
+        schedules = Scheduled.objects.filter(q_q).values()
+        sum_days = 0
+        if schedules:
+           sum_days = len(list(schedules))
         flag = True
         for sta in statistic_holiday:
             if sta[month_key]:
