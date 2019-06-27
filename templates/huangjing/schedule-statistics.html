@@ -3,10 +3,10 @@
 <div class="tab-box" id="myTab3">
     <ul class="nav nav-tabs king-nav-tabs2">
         <li class="active">
-            <a href="#tab3_1" data-toggle="tab" aria-expanded="false">个人排班统计</a>
+            <a href="#tab3_1" data-toggle="tab" id="personalTab" aria-expanded="false">个人排班统计</a>
         </li>
         <li class="">
-            <a href="#tab3_2" data-toggle="tab" aria-expanded="false">分组排班统计</a>
+            <a href="#tab3_2" data-toggle="tab" id="groupTab" aria-expanded="false">分组排班统计</a>
         </li>
     </ul>
     <div class="tab-content mb20">
@@ -76,7 +76,7 @@
         $.ajax({
             url: "${SITE_URL}api/schedule/statistics",
             type: 'post',
-            data:{userId:$('#username').val()},
+            data:conf.data,
             success: function(res){
                 //获取数据成功
                 if (res.result){
@@ -89,6 +89,34 @@
         })
     }
     $(function(){
+        $('#personalTab').bind('click', function () {
+            initEStandLineChart({
+                url: '${SITE_URL}api/schedule/statistics',
+                data: {'user_id': $('#username').val()},
+                containerId: 'personalStatistics'
+            });
+        })
+        $('#groupTab').bind('click', function () {
+            initEBarChart({
+                url: '${SITE_URL}api/schedule/statistics',
+                data: {'group_id': $('#group').val()},
+                containerId: 'groupStatistics'
+            });
+        });
+        $('#username').bind('change', function () {
+            initEStandLineChart({
+                url: '${SITE_URL}api/schedule/statistics',
+                data: {'user_id': $(this).val()},
+                containerId: 'personalStatistics'
+            });
+        })
+        $('#group').bind('change', function () {
+            initEBarChart({
+                url: '${SITE_URL}api/schedule/statistics',
+                data: {'group_id': $(this).val()},
+                containerId: 'groupStatistics'
+            });
+        })
         initEStandLineChart({
             url: '${SITE_URL}api/schedule/statistics',
             data: {'user_id': $('#username').val()},
@@ -145,19 +173,6 @@
             }
         })
     }
-    $('#username').bind('change',function(){
-         initEStandLineChart({
-            url: '${SITE_URL}api/schedule/statistics',
-            data: {'user_id': $(this).val()},
-            containerId: 'personalStatistics'
-        });
-    })
-     $('#group').bind('change',function(){
-         initEBarChart({
-            url: '${SITE_URL}api/schedule/statistics',
-            data: {'group_id': $(this).val()},
-            containerId: 'groupStatistics'
-        });
-    })
+
 </script>
 </%block>

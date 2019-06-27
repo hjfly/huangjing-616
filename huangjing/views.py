@@ -254,7 +254,7 @@ def api_schedule_statistics(request):
     statistic_holiday =[]
     statistic_normal =[]
     for holiday in holidays:
-        date = holiday['data']
+        date = holiday.data
         str = date.split('-')
         month_key = int(str[1])
         month_value = MONTH[month_key]
@@ -274,7 +274,7 @@ def api_schedule_statistics(request):
             statistic_holiday.append({'month': month_key, 'day': holiday_days})
 
     for holiday in holidays:
-        date = holiday['data']
+        date = holiday.data
         str = date.split('-')
         month_key = int(str[1])
         month_value = MONTH[month_key]
@@ -285,7 +285,7 @@ def api_schedule_statistics(request):
            sum_days = len(list(schedules))
         flag = True
         for sta in statistic_holiday:
-            if sta[month_key]:
+            if sta['month'] == month_key:
                 statistic_normal.append({'month': month_key, 'day': sum_days - sta['day']})
                 flag = False
 
@@ -295,18 +295,41 @@ def api_schedule_statistics(request):
     normals = []
     holidays = []
     for key in MONTH.keys():
+        flag = True
         for normal in statistic_normal:
             if normal['month'] == key:
                 normals.append(normal['day'])
-            else:
-                normals.append(0)
+                flag = False
+                break
+        if flag:
+            normals.append(0)
+
+        holiday_flag = True
         for holiday in statistic_holiday:
             if holiday['month'] == key:
                 holidays.append(holiday['day'])
-            else:
-                holidays.append(0)
+                holiday_flag = False
+                break
+        if holiday_flag:
+            holidays.append(0)
 
-    data = {
+    data_line = {
+        "xAxis": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+        "series": [
+            {
+                "name": "节假日",
+                "type": "line",
+                "data": holidays
+            },
+            {
+                "name": "工作日",
+                "type": "line",
+                "data": normals
+            }
+        ]
+
+    }
+    data_ebar = {
         "xAxis": [{
             "type": "category",
             "data": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
@@ -321,4 +344,9 @@ def api_schedule_statistics(request):
             "data": normals
         }]
     }
+    data = []
+    if user_id:
+        data = data_line
+    if group_id:
+        data = data_ebar
     return render_json({'result': True, 'data': data})
